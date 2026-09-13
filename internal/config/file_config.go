@@ -30,3 +30,19 @@ func write(conf Config) error {
 	err = os.WriteFile(filename, data, 0666)
 	return nil
 }
+
+func defaultConfig() error {
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		return err
+	}
+	filename := homedir + "/" + configFileName
+	defConf := Config{
+		DbURL:           "",
+		CurrentUserName: "",
+	}
+	configFile, err := os.WriteFile(filename, data, 0666)
+	if err != nil {
+		return err
+	}
+}
