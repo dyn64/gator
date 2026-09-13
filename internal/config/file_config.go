@@ -31,18 +31,21 @@ func write(conf Config) error {
 	return nil
 }
 
-func defaultConfig() error {
+func DefaultConfig() (Config, error) {
 	homedir, err := os.UserHomeDir()
 	if err != nil {
-		return err
+		return Config{}, err
 	}
 	filename := homedir + "/" + configFileName
-	defConf := Config{
-		DbURL:           "",
-		CurrentUserName: "",
-	}
-	configFile, err := os.WriteFile(filename, data, 0666)
+
+	data, err := json.Marshal(defConf)
 	if err != nil {
-		return err
+		return Config{}, err
 	}
+
+	err = os.WriteFile(filename, data, 0666)
+	if err != nil {
+		return Config{}, err
+	}
+	return defConf, nil
 }

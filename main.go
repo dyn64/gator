@@ -11,7 +11,12 @@ func main() {
 	conf, err := config.Read()
 	if err != nil {
 		fmt.Printf("Error reading config\n%v\n", err)
-		os.Exit(0)
+		conf, err := config.DefaultConfig()
+		if err != nil {
+			fmt.Printf("Error creating new config: %v\n", err)
+		}
+		fmt.Printf("Creating new config:\n dbUrl: %v\n current_username: %v\n", conf.DbURL, conf.CurrentUserName)
+
 	}
 	err = conf.SetUser("")
 	if err != nil {
