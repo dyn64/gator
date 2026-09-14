@@ -11,24 +11,39 @@ func main() {
 	conf, err := config.Read()
 	if err != nil {
 		fmt.Printf("Error reading config\n%v\n", err)
-		conf, err := config.DefaultConfig()
+		conf, err = config.DefaultConfig()
 		if err != nil {
-			fmt.Printf("Error creating new config: %v\n", err)
+			fmt.Printf("Error creating default config: %v\n", err)
 		}
-		fmt.Printf("Creating new config:\n dbUrl: %v\n current_username: %v\n", conf.DbURL, conf.CurrentUserName)
+		fmt.Printf("Using default config:\n dbUrl: %v\n current_username: %v\n", conf.DbURL, conf.CurrentUserName)
 
 	}
-	err = conf.SetUser("")
-	if err != nil {
-		fmt.Printf("Error setting/writing username\n%v\n", err)
-		os.Exit(0)
+	con := state{
+		conf: &conf,
 	}
 
-	conf, err = config.Read()
-	if err != nil {
-		fmt.Printf("Error reading config again\n%v\n", err)
-		os.Exit(0)
+	coms := commands{
+		cmds: make(map[string]func(*state, command) error),
 	}
-	fmt.Printf("dbUrl: %v\n", conf.DbURL)
-	fmt.Printf("current_username: %v\n", conf.CurrentUserName)
+
+	coms.register("login", handlerLogin)
+
+	cmdArgs := os.Args
+	if len(cmdArgs) < 2 {
+		fmt.Printf("Error, missing missing command\n")
+		os.Exit(1)
+	}
+	cmdName := cmdArgs[1]
+	cmdArg := cmdArgs[2:]
+	cmd := command{
+		name: cmdName,
+		args: cmdArg,
+	}
+	err = coms.run(&con, cmd)
+	if err != nil {
+		fmt.Printf("Error running command \"%s\"\n:", cmd.name)
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
 }
