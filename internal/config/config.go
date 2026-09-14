@@ -6,6 +6,6 @@ type Config struct {
 }
 
 var defConf = Config{
-	DbURL:           "postgres://example",
+	DbURL:           "postgres://postgres:postgres@localhost:5432/gator?sslmode=disable",
 	CurrentUserName: "secret",
 }
