@@ -15,6 +15,5 @@ func (c *Config) SetUser(userName string) error {
 	} else {
 		c.CurrentUserName = userName
 	}
-	write(*c)
-	return nil
+	return write(*c)
 }

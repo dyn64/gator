@@ -8,16 +8,16 @@ type commands struct {
 
 // run given command if it exists
 func (c *commands) run(s *state, cmd command) error {
-	runme, ok := c.cmds[cmd.name]
+	runme, ok := c.cmds[cmd.Name]
 	if !ok {
-		return fmt.Errorf("%s not found\n", cmd.name)
+		return fmt.Errorf("%s not found\n", cmd.Name)
 	}
-	err := runme(s, cmd)
-	if err != nil {
-		return err
-	}
+	return runme(s, cmd)
+	// if err != nil {
+	// 	return err
+	// }
 
-	return nil
+	// return nil
 }
 
 // register a new handler function for a given command
