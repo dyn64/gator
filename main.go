@@ -54,6 +54,7 @@ func main() {
 	coms.register("register", handlerRegister)
 	coms.register("reset", handlerReset)
 	coms.register("users", handlerUsers)
+	coms.register("agg", handlerAgg)
 
 	// grabs the command line arguments ex "go run . blabla xx" -> blabla xx
 	cmdArgs := os.Args
