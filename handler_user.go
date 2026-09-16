@@ -16,20 +16,19 @@ func handlerRegister(s *state, cmd command) error {
 		return fmt.Errorf("usage: %s <name>", cmd.Name)
 	}
 
+	name := cmd.Args[0]
 	dbParams := database.CreateUserParams{
 		ID:        uuid.New(),
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-		Name:      cmd.Args[0],
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
+		Name:      name,
 	}
 	usr, err := s.db.CreateUser(context.Background(), dbParams)
 	if err != nil {
 		log.Fatal(err)
 	}
 	err = s.conf.SetUser(usr.Name)
-	fmt.Printf("New user %s created\n", usr.Name)
-	fmt.Printf("ID: %v\nCreatedAt: %v\nUpdatedAt: %v\nName: %s\n", usr.ID, usr.CreatedAt, usr.UpdatedAt, usr.Name)
-
+	printUser(usr)
 	return nil
 }
 
@@ -43,7 +42,6 @@ func handlerLogin(s *state, cmd command) error {
 	if err != nil {
 		log.Fatalf("%s not found in database\n%v", username, err)
 	}
-	//s.conf.CurrentUserName = username
 
 	err = s.conf.SetUser(usr.Name)
 	if err != nil {
@@ -70,4 +68,13 @@ func handlerUsers(s *state, cmd command) error {
 	}
 
 	return nil
+}
+
+func printUser(user database.User) {
+	fmt.Printf("------New user created--------------------------------\n")
+	fmt.Printf(" * ID:\t\t%v\n", user.ID)
+	fmt.Printf(" * Created at:\t%v\n", user.CreatedAt)
+	fmt.Printf(" * Updated at:\t%v\n", user.UpdatedAt)
+	fmt.Printf(" * Username:\t%v\n", user.Name)
+	fmt.Printf("------------------------------------------------------\n")
 }
