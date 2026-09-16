@@ -11,6 +11,11 @@ import (
 	_ "github.com/lib/pq"
 )
 
+type state struct {
+	conf *config.Config
+	db   *database.Queries
+}
+
 func main() {
 	// read config, if it doesnt exist. create a new one from Defaultconfig
 	conf, err := config.Read()
@@ -47,6 +52,7 @@ func main() {
 	// register commands
 	coms.register("login", handlerLogin)
 	coms.register("register", handlerRegister)
+	coms.register("reset", handlerReset)
 
 	// grabs the command line arguments ex "go run . blabla xx" -> blabla xx
 	cmdArgs := os.Args

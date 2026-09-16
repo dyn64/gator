@@ -2,6 +2,11 @@ package main
 
 import "fmt"
 
+type command struct {
+	Name string
+	Args []string
+}
+
 type commands struct {
 	cmds map[string]func(*state, command) error
 }
@@ -13,11 +18,7 @@ func (c *commands) run(s *state, cmd command) error {
 		return fmt.Errorf("%s not found\n", cmd.Name)
 	}
 	return runme(s, cmd)
-	// if err != nil {
-	// 	return err
-	// }
 
-	// return nil
 }
 
 // register a new handler function for a given command
