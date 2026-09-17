@@ -50,6 +50,28 @@ func handlerAddfeed(s *state, cmd command) error {
 	return nil
 }
 
+func handlerFeeds(s *state, cmd command) error {
+	listfeeds, err := s.db.ListFeeds(context.Background())
+	if err != nil {
+		return fmt.Errorf("Error getting feeds: %w\n", err)
+	}
+
+	if len(listfeeds) == 0 {
+		fmt.Println("No feeds found.")
+		return nil
+	}
+
+	fmt.Printf("Found %d feeds:\n\n", len(listfeeds))
+	for i, row := range listfeeds {
+		fmt.Printf("- %d ----\n", i)
+		fmt.Printf("Name:\t%s\n", row.Name)
+		fmt.Printf("URL:\t%s\n", row.Url)
+		fmt.Printf("Owner:\t%s\n", row.Username)
+		fmt.Printf("--------\n\n")
+	}
+	return nil
+}
+
 func printFeed(feed database.Feed) {
 	fmt.Printf("-------New feed created-------------------------------\n")
 	fmt.Printf(" * ID:\t\t%v\n", feed.ID)
