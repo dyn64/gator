@@ -57,6 +57,8 @@ func main() {
 	coms.register("agg", handlerAgg)
 	coms.register("addfeed", handlerAddfeed)
 	coms.register("feeds", handlerFeeds)
+	coms.register("follow", handlerFollow)
+	coms.register("following", handlerFollowing)
 
 	// grabs the command line arguments ex "go run . blabla xx" -> blabla xx
 	cmdArgs := os.Args
