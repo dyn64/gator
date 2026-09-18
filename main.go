@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"log"
@@ -55,10 +56,10 @@ func main() {
 	coms.register("reset", handlerReset)
 	coms.register("users", handlerUsers)
 	coms.register("agg", handlerAgg)
-	coms.register("addfeed", handlerAddfeed)
+	coms.register("addfeed", middlewareLoggedIn(handlerAddfeed))
 	coms.register("feeds", handlerFeeds)
-	coms.register("follow", handlerFollow)
-	coms.register("following", handlerFollowing)
+	coms.register("follow", middlewareLoggedIn(handlerFollow))
+	coms.register("following", middlewareLoggedIn(handlerFollowing))
 
 	// grabs the command line arguments ex "go run . blabla xx" -> blabla xx
 	cmdArgs := os.Args
@@ -81,4 +82,14 @@ func main() {
 		os.Exit(1)
 	}
 
+}
+
+func middlewareLoggedIn(handler func(s *state, cmd command, user database.User) error) func(*state, command) error {
+	return func(s *state, cmd command) error {
+		user, err := s.db.GetUser(context.Background(), s.conf.CurrentUserName)
+		if err != nil {
+			return err
+		}
+		return handler(s, cmd, user)
+	}
 }
