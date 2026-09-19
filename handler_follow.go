@@ -59,3 +59,19 @@ func handlerFollowing(s *state, cmd command, user database.User) error {
 
 	return nil
 }
+
+func handlerUnfollow(s *state, cmd command, user database.User) error {
+	if len(cmd.Args) != 1 {
+		return fmt.Errorf("usage %s <url>", cmd.Name)
+	}
+	unfollowparams := database.UnFollowByURLParams{
+		Url:  cmd.Args[0],
+		Name: user.Name,
+	}
+
+	err := s.db.UnFollowByURL(context.Background(), unfollowparams)
+	if err != nil {
+		return err
+	}
+	return nil
+}
