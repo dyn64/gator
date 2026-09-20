@@ -9,18 +9,6 @@ import (
 	"github.com/google/uuid"
 )
 
-func handlerAgg(s *state, cmd command) error {
-	fetchURL := "https://www.wagslane.dev/index.xml"
-	rss, err := fetchFeed(context.Background(), fetchURL)
-	if err != nil {
-		return fmt.Errorf("agg-error(s):\n%w\n", err)
-	}
-
-	fmt.Printf("rssfeed:\n%+v\n", rss)
-
-	return nil
-}
-
 func handlerAddfeed(s *state, cmd command, user database.User) error {
 	if len(cmd.Args) != 2 {
 		return fmt.Errorf("usage %s <name> <url>\n", cmd.Name)
