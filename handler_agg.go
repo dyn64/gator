@@ -2,8 +2,13 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"time"
+
+	"github.com/dyn64/gator/internal/database"
+	"github.com/google/uuid"
+	"github.com/lib/pq"
 )
 
 func handlerAgg(s *state, cmd command) error {
@@ -55,8 +60,43 @@ func scrapeFeeds(s *state) error {
 		return fmt.Errorf("fetchfail\n %w\n", err)
 	}
 
-	for _, title := range rss.Channel.Item {
-		fmt.Printf("Title: %s\n", title.Title)
+	for _, post := range rss.Channel.Item {
+		pubAt, err := time.Parse(time.RFC1123Z, post.PubDate)
+		if err != nil {
+			fmt.Printf("Error in published_at field. Skipping title: %s\nError:\n%v\n", post.Title, err)
+			continue
+		}
+		pubTime := sql.NullTime{Time: pubAt, Valid: true}
+		var postDescription sql.NullString
+		if len(post.Description) != 0 {
+			postDescription = sql.NullString{String: post.Description, Valid: true}
+		} else {
+			postDescription = sql.NullString{String: "", Valid: false}
+		}
+
+		postArgs := database.AddPostParams{
+			ID:          uuid.New(),
+			CreatedAt:   time.Now().UTC(),
+			UpdatedAt:   time.Now().UTC(),
+			Title:       post.Title,
+			Url:         post.Link,
+			Description: postDescription,
+			PublishedAt: pubTime,
+			FeedID:      feed.ID,
+		}
+
+		err = s.db.AddPost(context.Background(), postArgs)
+		if err != nil {
+			//fmt.Printf("Error adding post: %v", err)
+			if pqErr, ok := err.(*pq.Error); ok {
+				switch pqErr.Code {
+				case "23505":
+					fmt.Printf("Duplicate entry\n")
+					continue
+				}
+			}
+			continue
+		}
 	}
 
 	return nil
