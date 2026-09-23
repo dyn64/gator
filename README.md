@@ -1,4 +1,5 @@
 Gator is a guided project from Boot.dev -- "Build a Blog Aggregator"
+There's a lot of features that would be nice to add, but I will just submit this 'as is' and move on to new courses.
 
 Gator needs postgresql, go and goose (to set up the database)
 
@@ -23,7 +24,7 @@ If the file does not exist, a default config will be created:
 The DbURL is the connection string for the database. The default one assumes the database is installed locally and is named 'gator'.
 
 Usage:
-go run . <command> <parameter>
+  go run . <command> <parameter>
 
 Commands:
   register <username>
